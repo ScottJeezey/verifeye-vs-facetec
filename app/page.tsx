@@ -96,7 +96,7 @@ export default function Home() {
       : "https://browser.facetec.com/";
     const name = platform === "verifEye" ? "verifEyePopup" : "facetecPopup";
 
-    window.open(url, name);
+    window.open(url, name, "width=520,height=720,left=100,top=50,noopener");
   };
 
   const startTimer = (platform: "verifEye" | "facetec") => {
@@ -167,7 +167,7 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* VerifEye Panel */}
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-verifEye-blue text-white px-6 py-4">
+            <div className="bg-blue-800 text-white px-6 py-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold">VerifEye</h2>
                 {verifEye.status === "completed" && verifEye.result === "passed" && (
@@ -188,7 +188,7 @@ export default function Home() {
                   {verifEye.status === "completed" && "Test completed"}
                 </span>
                 <div className={`text-3xl font-bold tabular-nums ${
-                  verifEye.status === "running" ? "text-verifEye-blue animate-pulse" :
+                  verifEye.status === "running" ? "text-blue-800 animate-pulse" :
                   verifEye.status === "completed" && verifEye.result === "passed" ? "text-green-600" :
                   verifEye.status === "completed" && verifEye.result === "failed" ? "text-red-600" :
                   "text-gray-400"
@@ -202,7 +202,7 @@ export default function Home() {
             <div className="relative bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center" style={{ height: "500px" }}>
               {verifEye.status === "idle" && (
                 <div className="text-center p-8">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-verifEye-blue rounded-full flex items-center justify-center">
+                  <div className="w-20 h-20 mx-auto mb-4 bg-blue-800 rounded-full flex items-center justify-center">
                     <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
@@ -230,7 +230,7 @@ export default function Home() {
               )}
               {verifEye.status === "running" && (
                 <div className="text-center p-8">
-                  <div className="w-20 h-20 mx-auto mb-4 bg-verifEye-blue rounded-full flex items-center justify-center animate-pulse">
+                  <div className="w-20 h-20 mx-auto mb-4 bg-blue-800 rounded-full flex items-center justify-center animate-pulse">
                     <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -240,7 +240,7 @@ export default function Home() {
                   <p className="text-gray-600 text-sm mb-4">Complete the verification in the popup window</p>
                   <div className="inline-block bg-white px-4 py-2 rounded-lg shadow-sm">
                     <p className="text-xs text-gray-500 mb-1">⏱️ Timer Running</p>
-                    <p className="text-3xl font-bold text-verifEye-blue tabular-nums">
+                    <p className="text-3xl font-bold text-blue-800 tabular-nums">
                       {formatTime(verifEye.elapsed)}
                     </p>
                   </div>
@@ -276,7 +276,7 @@ export default function Home() {
                   onClick={() => openPopup("verifEye")}
                   disabled={currentTest !== null}
                   suppressHydrationWarning
-                  className="w-full bg-verifEye-blue text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  className="w-full bg-blue-800 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                 >
                   🚀 Open VerifEye Popup
                 </button>
@@ -528,7 +528,7 @@ export default function Home() {
         {/* Comparison Summary */}
         {bothCompleted && (
           <div className="mt-8 bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-gradient-to-r from-verifEye-blue to-gray-600 text-white px-6 py-4">
+            <div className="bg-gradient-to-r from-blue-800 to-gray-600 text-white px-6 py-4">
               <h2 className="text-2xl font-bold">Comparison Results</h2>
             </div>
             <div className="p-6">
@@ -538,7 +538,7 @@ export default function Home() {
                     <th className="text-left py-3 px-4 font-semibold text-gray-700">
                       Metric
                     </th>
-                    <th className="text-center py-3 px-4 font-semibold text-verifEye-blue">
+                    <th className="text-center py-3 px-4 font-semibold text-blue-800">
                       VerifEye
                     </th>
                     <th className="text-center py-3 px-4 font-semibold text-gray-600">
@@ -591,7 +591,7 @@ export default function Home() {
                         Speed Advantage
                       </td>
                       <td className="text-center py-4 px-4" colSpan={2}>
-                        <span className="text-lg font-bold text-verifEye-blue">
+                        <span className="text-lg font-bold text-blue-800">
                           VerifEye is {((facetec.elapsed / verifEye.elapsed)).toFixed(1)}x faster
                         </span>
                       </td>
@@ -603,7 +603,7 @@ export default function Home() {
                         Robustness
                       </td>
                       <td className="text-center py-4 px-4" colSpan={2}>
-                        <span className="text-lg font-bold text-verifEye-blue">
+                        <span className="text-lg font-bold text-blue-800">
                           VerifEye succeeded where FaceTec failed
                         </span>
                       </td>
