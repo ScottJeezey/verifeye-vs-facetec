@@ -11,6 +11,7 @@ interface TestState {
   endTime: number | null;
   elapsed: number;
   result: TestResult;
+  clicks: number;
 }
 
 export default function Home() {
@@ -24,6 +25,7 @@ export default function Home() {
     endTime: null,
     elapsed: 0,
     result: null,
+    clicks: 0,
   });
 
   const [facetec, setFacetec] = useState<TestState>({
@@ -32,6 +34,7 @@ export default function Home() {
     endTime: null,
     elapsed: 0,
     result: null,
+    clicks: 0,
   });
 
   // Timer effect for VerifEye
@@ -77,26 +80,52 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [verifEye.status, facetec.status]);
 
+  // Receive results from the popup wrapper page (local proxy flow)
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      if (e.data?.type !== "VERIFICATION_RESULT") return;
+      const { platform, elapsed, clicks, result } = e.data;
+      const setState = platform === "verifEye" ? setVerifEye : setFacetec;
+      setState({
+        status: "completed",
+        startTime: null,
+        endTime: Date.now(),
+        elapsed,
+        result,
+        clicks,
+      });
+      setCurrentTest(null);
+    };
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, []);
+
   const openPopup = (platform: "verifEye" | "facetec") => {
     setCurrentTest(platform);
     const setState = platform === "verifEye" ? setVerifEye : setFacetec;
 
-    // Set to ready state (popup opened, but timer not started)
     setState({
       status: "ready",
       startTime: null,
       endTime: null,
       elapsed: 0,
       result: null,
+      clicks: 0,
     });
 
-    // Open popup window
-    const url = platform === "verifEye"
-      ? "https://realeyes.ai/try-demo/#demo"
-      : "https://browser.facetec.com/";
+    const isLocal = window.location.hostname === "localhost";
     const name = platform === "verifEye" ? "verifEyePopup" : "facetecPopup";
 
-    window.open(url, name, "width=520,height=720,left=100,top=50,noopener");
+    if (isLocal) {
+      // Local: open our popup wrapper with proxy iframe + integrated controls
+      window.open(`/popup?platform=${platform}`, name, "width=560,height=760,left=100,top=50");
+    } else {
+      // Production: open direct URL
+      const url = platform === "verifEye"
+        ? "https://realeyes.ai/try-demo/#demo"
+        : "https://browser.facetec.com/";
+      window.open(url, name, "width=520,height=720,left=100,top=50,noopener");
+    }
   };
 
   const startTimer = (platform: "verifEye" | "facetec") => {
@@ -121,20 +150,8 @@ export default function Home() {
   };
 
   const resetAll = () => {
-    setVerifEye({
-      status: "idle",
-      startTime: null,
-      endTime: null,
-      elapsed: 0,
-      result: null,
-    });
-    setFacetec({
-      status: "idle",
-      startTime: null,
-      endTime: null,
-      elapsed: 0,
-      result: null,
-    });
+    setVerifEye({ status: "idle", startTime: null, endTime: null, elapsed: 0, result: null, clicks: 0 });
+    setFacetec({ status: "idle", startTime: null, endTime: null, elapsed: 0, result: null, clicks: 0 });
     setCurrentTest(null);
   };
 
@@ -563,6 +580,25 @@ export default function Home() {
                         facetec.result === "passed" && facetec.elapsed < verifEye.elapsed ? "text-green-600" : "text-gray-900"
                       }`}>
                         {facetec.result === "failed" ? "N/A" : formatTime(facetec.elapsed)}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-4 px-4 font-medium text-gray-700">
+                      Clicks Required
+                    </td>
+                    <td className="text-center py-4 px-4">
+                      <span className={`text-2xl font-bold tabular-nums ${
+                        verifEye.clicks > 0 && verifEye.clicks <= facetec.clicks ? "text-green-600" : "text-gray-900"
+                      }`}>
+                        {verifEye.clicks > 0 ? verifEye.clicks : "—"}
+                      </span>
+                    </td>
+                    <td className="text-center py-4 px-4">
+                      <span className={`text-2xl font-bold tabular-nums ${
+                        facetec.clicks > 0 && facetec.clicks < verifEye.clicks ? "text-green-600" : "text-gray-900"
+                      }`}>
+                        {facetec.clicks > 0 ? facetec.clicks : "—"}
                       </span>
                     </td>
                   </tr>
